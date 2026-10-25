@@ -1,0 +1,11 @@
+.bottom-nav{display:none}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}.sidebar{display:none}.mobile-brand{display:flex}
+  .topbar{padding:10px 14px;gap:8px}.search{display:none}
+  .pop{right:14px;top:60px}.view{padding:16px 14px calc(92px + env(safe-area-inset-bottom))}
+  .win{height:calc(100dvh - 150px)}
+  .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:rgba(10,13,20,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+  .bottom-nav .nav-item{flex-direction:column;gap:2px;min-height:56px;padding:4px;font-size:.72rem;justify-content:center;text-align:center}
+  .bottom-nav .nav-item[aria-current=page]{box-shadow:inset 0 3px 0 var(--orange)}
+}
+@media (max-width:420px){.apps{grid-template-columns:repeat(2,1fr)}.welcome-card h1{font-size:1.6rem}}
