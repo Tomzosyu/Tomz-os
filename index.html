@@ -22,6 +22,15 @@
     <button id="googleBtn" class="btn primary" type="button">Continue with Google</button>
     <button id="guestBtn" class="btn ghost" type="button">Guest Mode</button>
     <p id="authMsg" class="notice" role="status" hidden></p>
+    <details id="gSetup" class="gsetup">
+      <summary>Google sign-in setup</summary>
+      <p class="muted">1. In Google Cloud Console, open your Web OAuth client and add this exact address under <b>Authorized JavaScript origins</b>:</p>
+      <div class="row"><code id="originBox"></code><button id="copyOrigin" type="button" class="btn small">Copy</button></div>
+      <p id="originExtra" class="muted" hidden>On localhost also add <code>http://localhost</code> (no port).</p>
+      <p id="originWarn" class="notice" hidden></p>
+      <label class="field"><span>2. Paste your Client ID (never the client secret)</span><input id="cidInput" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="123456789012-abc123.apps.googleusercontent.com"></label>
+      <button id="saveCid" type="button" class="btn small primary">Save Client ID</button>
+    </details>
   </div>
 </main>
 
@@ -61,6 +70,8 @@
 <script src="js/calculator.js"></script>
 <script src="js/password-generator.js"></script>
 <script src="js/games.js"></script>
+<script src="js/youtube.js"></script>
+<script src="js/apps-embed.js"></script>
 <script src="js/search.js"></script>
 <script src="js/settings.js"></script>
 </body>
