@@ -112,17 +112,10 @@
   }
   renderDashboard.refresh = function (view) { var s = view.scrollTop; T.nav.render(); window.scrollTo(0, s); };
 
-  function appBar(a) {
-    return el('div', { class: 'win-bar' }, icon(a), el('span', { class: 'grow', text: a.name }),
-      el('button', { class: 'btn small', type: 'button', text: 'Open in New Tab', onclick: function () { openNew(a.url); } }),
-      el('button', { class: 'btn small accent', type: 'button', text: 'Back to Dashboard', onclick: function () { T.nav.go('dashboard'); } }));
-  }
-  T.appBar = appBar;
   function renderApp(view, id) {
     var a = byId[id];
     if (!a) { T.nav.go('dashboard'); return; }
     pushRecent(id);
-    if (T.panels && T.panels[id]) { T.panels[id](view, a); return; }
     var win = el('section', { class: 'panel win', 'aria-label': a.name + ' window' });
     var bar = el('div', { class: 'win-bar' }, icon(a), el('span', { class: 'grow', text: a.name }),
       el('button', { class: 'btn small', type: 'button', text: 'Open in New Tab', onclick: function () { openNew(a.url); } }),

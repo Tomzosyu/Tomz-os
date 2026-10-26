@@ -1,7 +1,7 @@
 (function (T) {
   var el = T.el, store = T.store, U = T.util, PRE = 'tomz.';
   var flash = '';
-  var ACC = [['Blue', '#168BFF'], ['Orange', '#FF7A18'], ['Red', '#E50914'], ['Green', '#27D17F'], ['Purple', '#9B6BFF']];
+  var ACC = [['Blue', '#168BFF'], ['Orange', '#FF7A18'], ['Green', '#27D17F'], ['Purple', '#9B6BFF']];
 
   function apply() {
     var a = store.get('accent', '#168BFF'); if (!/^#[0-9a-f]{6}$/i.test(a)) a = '#168BFF';
@@ -17,7 +17,6 @@
   /* ---- import validation ---- */
   var isArr = Array.isArray, obj = function (v) { return !!v && typeof v === 'object' && !isArr(v); }, bool = function (v) { return typeof v === 'boolean'; };
   var strs = function (v) { return isArr(v) && v.length <= 500 && v.every(function (x) { return typeof x === 'string'; }); };
-  var ytl = function (v) { return isArr(v) && v.length <= 200 && v.every(function (x) { return obj(x) && typeof x.id === 'string' && /^[\w-]{11}$/.test(x.id) && typeof x.title === 'string'; }); };
   var V = {
     tasks: function (v) { return isArr(v) && v.length <= 5000 && v.every(function (t) { return obj(t) && typeof t.id === 'string' && typeof t.title === 'string' && ['low', 'medium', 'high'].indexOf(t.pri) >= 0; }); },
     notes: function (v) { return isArr(v) && v.length <= 2000 && v.every(function (n) { return obj(n) && typeof n.id === 'string' && typeof n.title === 'string' && typeof n.body === 'string'; }); },
@@ -28,16 +27,13 @@
     pomo_mode: function (v) { return typeof v === 'string' && v.length < 30; },
     accent: function (v) { return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); },
     intensity: function (v) { return typeof v === 'number' && v >= 0 && v <= 100; },
-    yt_history: ytl, yt_later: ytl, yt_liked: ytl, sp_recent: strs,
-    gh_user: function (v) { return typeof v === 'string' && v.length <= 40; }, cal_src: function (v) { return typeof v === 'string' && v.length <= 200; },
-    gClientId: function (v) { return typeof v === 'string' && /^[0-9]+-[a-z0-9_]+\.apps\.googleusercontent\.com$/i.test(v); },
     compact: bool, anim: bool, sound: bool, clock24: bool
   };
 
   function exportAll() {
     var data = {};
     for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i); if (k.indexOf(PRE) !== 0 || k === PRE + 'user' || k === PRE + 'yt_key') continue;
+      var k = localStorage.key(i); if (k.indexOf(PRE) !== 0 || k === PRE + 'user') continue;
       try { data[k.slice(PRE.length)] = JSON.parse(localStorage.getItem(k)); } catch (e) {}
     }
     var out = { app: 'tomz-os', version: 1, exportedAt: new Date().toISOString(), data: data };
@@ -124,7 +120,7 @@
     var u = T.auth.getUser() || { name: 'Guest', mode: 'guest' };
     var acct = el('section', { class: 'panel card grid' }, el('h2', { text: 'Account' }),
       el('p', { style: 'margin:0', text: u.name + ' · ' + (u.mode === 'google' ? 'Signed in with Google' : 'Guest Mode') }),
-      el('p', { class: 'muted', style: 'margin:0', text: T.auth.configured() ? 'Google sign-in has a Client ID saved.' : 'Google sign-in has no Client ID yet. Log out to see the setup steps on the welcome screen.' }),
+      el('p', { class: 'muted', style: 'margin:0', text: T.auth.configured ? 'Google sign-in is configured.' : 'Google sign-in is not configured. Add a Client ID in js/auth.js (see docs/SETUP.md).' }),
       U.btn('Log out', function () { T.auth.logout(); }, 'small'));
     view.append(el('section', { class: 'panel hero' }, el('div', {}, el('h1', { text: 'Settings' }), el('p', { class: 'muted', text: 'Changes apply immediately and are saved on this device.' }))),
       el('div', { class: 'grid cols-2' }, appear, snd, wid, acct), data);
