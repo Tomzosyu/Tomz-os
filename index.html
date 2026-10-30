@@ -15,8 +15,8 @@
 
 <main id="welcome" class="welcome" hidden>
   <div class="panel welcome-card">
-    <img class="logo float" src="assets/logo.svg" alt="" width="96" height="96">
-    <h1>Welcome to Tomz OS</h1>
+    <div class="brand big" role="img" aria-label="TOMZ OS by CodeForge"><span class="logo-wrap"><i class="ring"></i><img class="logo" src="assets/logo.svg" alt="" width="96" height="96"></span><span class="brand-text"><span class="brand-name" aria-hidden="true"><span class="ch" style="--i:0">T</span><span class="ch" style="--i:1">O</span><span class="ch" style="--i:2">M</span><span class="ch" style="--i:3">Z</span><span class="ch sp"></span><span class="ch" style="--i:5">O</span><span class="ch" style="--i:6">S</span></span><small class="by" aria-hidden="true"><span class="by-type"><span>by</span> <b class="forge">Code<em>Forge</em></b></span><i class="spk" style="--x:62%;--dx:6px;--d:3s"></i><i class="spk" style="--x:76%;--dx:-4px;--d:3.5s"></i><i class="spk" style="--x:88%;--dx:8px;--d:4.1s"></i></small></span></div>
+    <h1>Welcome</h1>
     <p class="muted">Your tasks, tools and apps in one place. Everything you create stays in this browser.</p>
     <div id="gsiHolder" class="gsi-holder"></div>
     <button id="googleBtn" class="btn primary" type="button">Continue with Google</button>
@@ -27,7 +27,7 @@
 
 <div id="shell" class="shell" hidden>
   <aside class="sidebar" aria-label="Main navigation">
-    <a class="brand" href="#/dashboard" aria-label="TOMZ OS home"><img class="logo" src="assets/logo.svg" alt="" width="40" height="40"><span>TOMZ OS</span></a>
+    <a class="brand" href="#/dashboard" aria-label="TOMZ OS home"><span class="logo-wrap"><i class="ring"></i><img class="logo" src="assets/logo.svg" alt="" width="40" height="40"></span><span class="brand-text"><span class="brand-name" aria-hidden="true"><span class="ch" style="--i:0">T</span><span class="ch" style="--i:1">O</span><span class="ch" style="--i:2">M</span><span class="ch" style="--i:3">Z</span><span class="ch sp"></span><span class="ch" style="--i:5">O</span><span class="ch" style="--i:6">S</span></span><small class="by" aria-hidden="true"><span class="by-type"><span>by</span> <b class="forge">Code<em>Forge</em></b></span><i class="spk" style="--x:62%;--dx:6px;--d:3s"></i><i class="spk" style="--x:76%;--dx:-4px;--d:3.5s"></i><i class="spk" style="--x:88%;--dx:8px;--d:4.1s"></i></small></span></a>
     <nav id="sideNav"></nav>
     <div class="profile">
       <img id="avatar" class="avatar" alt="" hidden>
@@ -38,7 +38,7 @@
   </aside>
   <div class="content">
     <header class="topbar">
-      <a class="brand mobile-brand" href="#/dashboard"><img class="logo" src="assets/logo.svg" alt="" width="32" height="32"><span>TOMZ OS</span></a>
+      <a class="brand mobile-brand" href="#/dashboard"><span class="logo-wrap"><i class="ring"></i><img class="logo" src="assets/logo.svg" alt="" width="32" height="32"></span><span class="brand-text"><span class="brand-name" aria-hidden="true"><span class="ch" style="--i:0">T</span><span class="ch" style="--i:1">O</span><span class="ch" style="--i:2">M</span><span class="ch" style="--i:3">Z</span><span class="ch sp"></span><span class="ch" style="--i:5">O</span><span class="ch" style="--i:6">S</span></span><small class="by" aria-hidden="true"><span class="by-type"><span>by</span> <b class="forge">Code<em>Forge</em></b></span><i class="spk" style="--x:62%;--dx:6px;--d:3s"></i><i class="spk" style="--x:76%;--dx:-4px;--d:3.5s"></i><i class="spk" style="--x:88%;--dx:8px;--d:4.1s"></i></small></span></a>
       <label class="search"><span class="sr">Search apps</span><input id="globalSearch" type="search" placeholder="Search apps  (Ctrl/Cmd + K)" autocomplete="off"></label>
       <div class="top-actions">
         <button id="searchBtn" class="icon-btn" type="button" aria-label="Search everything">&#128269;</button>
@@ -61,6 +61,7 @@
 <script src="js/calculator.js"></script>
 <script src="js/password-generator.js"></script>
 <script src="js/games.js"></script>
+<script src="js/minigames.js"></script>
 <script src="js/search.js"></script>
 <script src="js/settings.js"></script>
 </body>

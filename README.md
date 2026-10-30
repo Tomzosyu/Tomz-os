@@ -1,6 +1,6 @@
 # TOMZ OS
 
-A personal, browser-based "operating system" for phones, tablets and computers: dashboard, app launcher, task manager, 15 tools, 5 games and settings. Built with plain HTML, CSS and JavaScript. No framework, no build step, no server code.
+A personal, browser-based "operating system" for phones, tablets and computers: dashboard, app launcher, task manager, 15 tools, 8 games and settings. Built with plain HTML, CSS and JavaScript. No framework, no build step, no server code.
 
 Everything you create (tasks, notes, habits, scores, settings) is stored in your own browser's localStorage. Nothing is sent to a server.
 
@@ -8,7 +8,7 @@ Everything you create (tasks, notes, habits, scores, settings) is stored in your
 - **Dashboard:** live clock, greeting, app launcher (12 services), favorites, recently opened apps, task progress, shortcuts, notifications panel, customizable widgets.
 - **Tasks:** add, edit, delete, complete; priority, due date and time, category, tags; search, filters (All, Today, Upcoming, Completed, Overdue), sorting, progress and daily summary.
 - **Tools:** calculator, password generator, stopwatch, countdown, Pomodoro, notes, word counter, QR code, unit converter, random number, coin flip, dice, color picker, text case converter, habit tracker.
-- **Games:** Tic-Tac-Toe (two players or vs computer), Rock Paper Scissors, Number Guessing, Memory Match, Snake (keyboard, swipe or on-screen pad).
+- **Games:** Tic-Tac-Toe (two players or vs computer), Rock Paper Scissors, Number Guessing, Memory Match, Snake, Reaction test, Whack-a-mole, Math sprint.
 - **Search:** `Ctrl/Cmd + K` searches sections, apps, tools, games, tasks and notes.
 - **Settings:** accent color, glow intensity, compact layout, animations, clock format, sound, widget order, JSON export/import, clear data.
 - **Login:** Guest Mode (no setup) or Google sign-in (optional, needs your own Client ID).
@@ -29,7 +29,7 @@ tomz-os/
 │   ├── tools.js               tools hub and 13 tools
 │   ├── calculator.js          safe expression parser (no eval)
 │   ├── password-generator.js  Web Crypto passwords
-│   ├── games.js               5 games
+│   ├── games.js               8 games
 │   ├── search.js              global search (Ctrl/Cmd + K)
 │   └── settings.js            settings, import/export
 └── docs/SETUP.md
