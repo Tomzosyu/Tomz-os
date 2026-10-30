@@ -26,7 +26,7 @@
     habits: function (v) { return isArr(v) && v.length <= 200 && v.every(function (h) { return obj(h) && typeof h.id === 'string' && typeof h.name === 'string' && obj(h.days); }); },
     calc_hist: strs, favs: strs, recent: strs,
     notifs: function (v) { return isArr(v) && v.length <= 200 && v.every(function (n) { return obj(n) && typeof n.text === 'string'; }); },
-    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_cfg: obj, pomo_done: obj,
+    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_cfg: obj, gclient: function (v) { return typeof v === 'string' && /^[\w.-]+\.apps\.googleusercontent\.com$/.test(v); }, pomo_done: obj,
     pomo_mode: function (v) { return typeof v === 'string' && v.length < 30; },
     accent: function (v) { return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); },
     intensity: function (v) { return typeof v === 'number' && v >= 0 && v <= 100; },

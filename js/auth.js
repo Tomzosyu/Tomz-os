@@ -31,23 +31,39 @@
       document.head.appendChild(s);
     });
   }
+  var OK_ID = /^[\w.-]+\.apps\.googleusercontent\.com$/;
+  CLIENT_ID = CLIENT_ID || T.store.get('gclient', '') || '';
   function startGoogle() {
-    if (!CLIENT_ID) { msg('Google sign-in is not configured yet. Add your Client ID in js/auth.js (see docs/SETUP.md), or continue as Guest.'); return; }
+    if (!CLIENT_ID) {
+      $('#gSetup').hidden = false;
+      msg('Paste your Google Client ID below. In Google Cloud, add this exact address as an Authorized JavaScript origin: ' + location.origin);
+      return;
+    }
+    $('#gSetup').hidden = true;
     msg('Loading Google sign-in…');
     loadGsi().then(function () {
-      google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredential });
+      google.accounts.id.initialize({ client_id: CLIENT_ID, callback: onCredential, auto_select: false, cancel_on_tap_outside: true });
       $('#gsiHolder').textContent = '';
-      google.accounts.id.renderButton($('#gsiHolder'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'continue_with' });
-      $('#googleBtn').hidden = true; msg('');
+      google.accounts.id.renderButton($('#gsiHolder'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'continue_with', width: Math.min(320, Math.max(200, $('#gsiHolder').clientWidth || 280)) });
+      $('#googleBtn').hidden = true; $('#gReset').hidden = false;
+      msg('If Google shows "origin_mismatch" or "invalid client", add ' + location.origin + ' as an Authorized JavaScript origin in Google Cloud, or use a different Client ID below.');
     }).catch(function () { msg('Could not reach Google. Check your internet connection, or continue as Guest.'); });
   }
   function logout() {
     try { if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect(); } catch (e) {}
-    T.store.remove('user'); $('#gsiHolder').textContent = ''; $('#googleBtn').hidden = false; msg(''); fire();
+    T.store.remove('user'); $('#gsiHolder').textContent = ''; $('#googleBtn').hidden = false; $('#gReset').hidden = true; msg(''); fire();
   }
-  T.auth = { getUser: getUser, logout: logout, configured: !!CLIENT_ID };
+  T.auth = { getUser: getUser, logout: logout, configured: !!(CLIENT_ID || T.store.get('gclient', '')) };
   document.addEventListener('DOMContentLoaded', function () {
     $('#googleBtn').addEventListener('click', startGoogle);
+    $('#gReset').addEventListener('click', function () {
+      T.store.remove('gclient'); CLIENT_ID = ''; T.auth.configured = false; $('#gsiHolder').textContent = ''; $('#gReset').hidden = true; $('#googleBtn').hidden = false; startGoogle();
+    });
+    $('#gSave').addEventListener('click', function () {
+      var v = $('#gClientInput').value.trim();
+      if (!OK_ID.test(v)) { msg('That does not look like a Client ID. It ends in .apps.googleusercontent.com'); return; }
+      T.store.set('gclient', v); CLIENT_ID = v; T.auth.configured = true; startGoogle();
+    });
     $('#guestBtn').addEventListener('click', function () { setUser({ mode: 'guest', name: 'Guest', picture: '' }); });
     $('#logoutBtn').addEventListener('click', logout);
   });
