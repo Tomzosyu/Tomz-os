@@ -33,7 +33,7 @@
     });
     document.body.append(ov);
   }
-  function open() { if (document.querySelector('#shell').hidden) return; if (!ov) build(); last = document.activeElement; inp.value = ''; ov.hidden = false; paint(); inp.focus(); }
+  function open(seed) { if (document.querySelector('#shell').hidden) return; if (!ov) build(); last = document.activeElement; inp.value = typeof seed === 'string' ? seed : ''; ov.hidden = false; paint(); inp.focus(); }
   T.search = { open: open, close: close };
   document.addEventListener('DOMContentLoaded', function () { document.querySelector('#searchBtn').addEventListener('click', open); });
 })(window.Tomz);

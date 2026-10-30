@@ -39,10 +39,10 @@
     function sync() { var s = st(); go.textContent = s.end ? 'Pause' : (s.left < getDur() ? 'Resume' : 'Start'); show(); }
     var iv = setInterval(function () {
       if (!box.isConnected) { clearInterval(iv); return; }
-      var s = st(); if (s.end && s.end <= Date.now()) { store.set(key, { left: 0, end: 0 }); msg.textContent = label + ' finished!'; beep(); if (onDone) onDone(); sync(); } else show();
+      var s = st(); if (s.end && s.end <= Date.now()) { store.set(key, { left: getDur(), end: 0 }); msg.textContent = label + ' finished!'; beep(); if (T.notify) T.notify(label + ' finished!'); if (onDone) onDone(); sync(); } else show();
     }, 250);
     box.append(disp, el('div', { class: 'row', style: 'justify-content:center' }, go, rs), msg); sync();
-    return { reset: function () { store.set(key, { left: getDur(), end: 0 }); sync(); } };
+    return { reset: function () { store.set(key, { left: getDur(), end: 0 }); msg.textContent = ''; sync(); }, extend: function (ms) { var s = st(); if (s.end) s.end = Math.min(s.end + ms, Date.now() + 10800000); else s.left = Math.min(s.left + ms, 10800000); store.set(key, s); sync(); } };
   }
 
   add('stopwatch', 'Stopwatch', 'Time anything, with laps', function (box) {
@@ -68,16 +68,20 @@
     e = engine(box, 'cd_state', function () { return dur() || 300000; }, 'Countdown');
   });
 
-  add('pomodoro', 'Pomodoro', 'Focus and break cycles', function (box) {
-    var modes = { Focus: 25, 'Short break': 5, 'Long break': 15 }, cur = store.get('pomo_mode', 'Focus'), e;
-    if (!modes[cur]) cur = 'Focus';
-    var row = el('div', { class: 'chips', style: 'justify-content:center' });
-    Object.keys(modes).forEach(function (k) { row.append(el('button', { class: 'chip', type: 'button', text: k, onclick: function () { cur = k; store.set('pomo_mode', k); e.reset(); mark(); } })); });
-    function mark() { row.querySelectorAll('.chip').forEach(function (c) { c.style.borderColor = c.textContent === cur ? 'var(--orange)' : ''; }); }
+  add('pomodoro', 'Pomodoro', 'Focus and break cycles with adjustable time', function (box) {
+    var def = { Focus: 25, 'Short break': 5, 'Long break': 15 }, cfg = Object.assign({}, def, store.get('pomo_cfg', {})), cur = store.get('pomo_mode', 'Focus'), e;
+    Object.keys(def).forEach(function (k) { var v = Math.floor(+cfg[k]); cfg[k] = v >= 1 && v <= 180 ? v : def[k]; });
+    if (!def[cur]) cur = 'Focus';
+    var row = el('div', { class: 'chips', style: 'justify-content:center' }), len = el('strong');
+    Object.keys(def).forEach(function (k) { row.append(el('button', { class: 'chip', type: 'button', text: k, onclick: function () { cur = k; store.set('pomo_mode', k); e.reset(); mark(); } })); });
+    function mark() { row.querySelectorAll('.chip').forEach(function (c) { c.style.borderColor = c.textContent === cur ? 'var(--orange)' : ''; }); len.textContent = cur + ' length: ' + cfg[cur] + ' min'; }
+    function setLen(d) { var v = cfg[cur] + d; if (v < 1 || v > 180) return; cfg[cur] = v; store.set('pomo_cfg', cfg); e.reset(); mark(); }
     var done = el('p', { class: 'muted', style: 'text-align:center' });
     function count() { var d = store.get('pomo_done', { d: '', n: 0 }), t = new Date().toDateString(); done.textContent = 'Focus sessions finished today: ' + (d.d === t ? d.n : 0); }
-    box.append(row, done);
-    e = engine(box, 'pomo_state', function () { return modes[cur] * 60000; }, cur, function () { if (cur === 'Focus') { var t = new Date().toDateString(), d = store.get('pomo_done', { d: '', n: 0 }); store.set('pomo_done', { d: t, n: (d.d === t ? d.n : 0) + 1 }); count(); } });
+    var adj = el('div', { class: 'row', style: 'justify-content:center' }, btn('−1', function () { setLen(-1); }, 'small'), len, btn('+1', function () { setLen(1); }, 'small'), btn('+5', function () { setLen(5); }, 'small'));
+    box.append(row, adj, done);
+    e = engine(box, 'pomo_state', function () { return cfg[cur] * 60000; }, cur, function () { if (cur === 'Focus') { var t = new Date().toDateString(), d = store.get('pomo_done', { d: '', n: 0 }); store.set('pomo_done', { d: t, n: (d.d === t ? d.n : 0) + 1 }); count(); } });
+    box.append(el('div', { class: 'row', style: 'justify-content:center' }, btn('+1 min', function () { e.extend(60000); }), btn('+5 min', function () { e.extend(300000); }), btn('+10 min', function () { e.extend(600000); })));
     mark(); count();
   });
 

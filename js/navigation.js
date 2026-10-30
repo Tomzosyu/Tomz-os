@@ -23,7 +23,7 @@
     var c = current(), r = routes[c.id] || routes.dashboard, view = $('#view');
     if (!routes[c.id]) c = { id: 'dashboard', arg: '' };
     view.textContent = '';
-    r.render(view, c.arg);
+    try { r.render(view, c.arg); } catch (err) { view.textContent = ''; var p = document.createElement('p'); p.className = 'panel empty'; p.textContent = 'Something went wrong loading this page. Try another section.'; view.append(p); if (window.console) console.error(err); }
     document.querySelectorAll('.nav-item').forEach(function (a) {
       if (a.dataset.route === (r.parent || c.id)) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });

@@ -6,7 +6,10 @@
   function apply() {
     var a = store.get('accent', '#168BFF'); if (!/^#[0-9a-f]{6}$/i.test(a)) a = '#168BFF';
     var r = document.documentElement.style, i = Number(store.get('intensity', 100));
-    r.setProperty('--blue', a); r.setProperty('--orange', a.toUpperCase() === '#FF7A18' ? '#168BFF' : '#FF7A18');
+    var o = a.toUpperCase() === '#FF7A18' ? '#168BFF' : '#FF7A18';
+    function rgb(h) { return parseInt(h.slice(1, 3), 16) + ',' + parseInt(h.slice(3, 5), 16) + ',' + parseInt(h.slice(5, 7), 16); }
+    function dk(h) { return '#' + [1, 3, 5].map(function (k) { return ('0' + Math.round(parseInt(h.substr(k, 2), 16) * .65).toString(16)).slice(-2); }).join(''); }
+    r.setProperty('--blue', a); r.setProperty('--orange', o); r.setProperty('--blue-rgb', rgb(a)); r.setProperty('--orange-rgb', rgb(o)); r.setProperty('--blue-dark', dk(a));
     r.setProperty('--intensity', String((isFinite(i) ? Math.min(100, Math.max(0, i)) : 100) / 100));
     document.body.classList.toggle('compact', store.get('compact', false) === true);
     document.body.classList.toggle('no-anim', store.get('anim', true) === false);
@@ -23,7 +26,7 @@
     habits: function (v) { return isArr(v) && v.length <= 200 && v.every(function (h) { return obj(h) && typeof h.id === 'string' && typeof h.name === 'string' && obj(h.days); }); },
     calc_hist: strs, favs: strs, recent: strs,
     notifs: function (v) { return isArr(v) && v.length <= 200 && v.every(function (n) { return obj(n) && typeof n.text === 'string'; }); },
-    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_done: obj,
+    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_cfg: obj, pomo_done: obj,
     pomo_mode: function (v) { return typeof v === 'string' && v.length < 30; },
     accent: function (v) { return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); },
     intensity: function (v) { return typeof v === 'number' && v >= 0 && v <= 100; },

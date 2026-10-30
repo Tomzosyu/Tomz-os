@@ -78,11 +78,11 @@
 
   /* ---------- Memory ---------- */
   add('memory', 'Memory match', 'Find all 8 pairs', function (box) {
-    var sym = ['★', '♦', '♣', '♠', '●', '▲', '■', '☾'], deck, open, lock, moves, found, best = sc().memBest || 0;
+    var sym = ['★', '♦', '♣', '♠', '●', '▲', '■', '☾'], deck, open, lock, moves, found, tk = 0, best = sc().memBest || 0;
     var grid = el('div', { class: 'mem' }), out = el('div', { class: 'out', role: 'status', style: 'font-size:1.4rem' }), info = center(el('p', { class: 'muted' }));
     function paint() { info.textContent = 'Moves: ' + moves + ' · Pairs: ' + found + '/8' + (best ? ' · Best: ' + best + ' moves' : ''); }
     function reset() {
-      deck = sym.concat(sym); for (var i = deck.length - 1; i > 0; i--) { var j = U.randInt(0, i), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
+      tk++; deck = sym.concat(sym); for (var i = deck.length - 1; i > 0; i--) { var j = U.randInt(0, i), t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
       open = []; lock = false; moves = 0; found = 0; out.textContent = 'Flip two cards'; grid.textContent = '';
       deck.forEach(function (s, i) { grid.append(el('button', { class: 'card-m', type: 'button', 'aria-label': 'Card ' + (i + 1) + ', face down', onclick: function () { flip(i); } })); });
       paint();
@@ -95,7 +95,7 @@
         moves++; var a = open[0], b2 = open[1];
         if (deck[a] === deck[b2]) { [a, b2].forEach(function (k) { grid.children[k].classList.remove('up'); grid.children[k].classList.add('ok'); }); open = []; found++;
           if (found === 8) { out.textContent = 'You won in ' + moves + ' moves!'; if (!best || moves < best) { best = moves; setSc('memBest', best); } } }
-        else { lock = true; setTimeout(function () { show(a, false); show(b2, false); open = []; lock = false; }, 800); }
+        else { lock = true; var my = tk; setTimeout(function () { if (my !== tk) return; show(a, false); show(b2, false); open = []; lock = false; }, 800); }
         paint();
       }
     }
@@ -132,7 +132,7 @@
       if (!box.isConnected) { document.removeEventListener('keydown', onKey); return; }
       if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
       var m = { ArrowUp: [0, -1], w: [0, -1], ArrowDown: [0, 1], s: [0, 1], ArrowLeft: [-1, 0], a: [-1, 0], ArrowRight: [1, 0], d: [1, 0] }[e.key];
-      if (m) { e.preventDefault(); steer(m[0], m[1]); } else if (e.key === ' ') { e.preventDefault(); run ? stop() : start(); }
+      if (m) { e.preventDefault(); steer(m[0], m[1]); } else if (e.key === ' ' && e.target.tagName !== 'BUTTON') { e.preventDefault(); run ? stop() : start(); }
     }
     document.addEventListener('keydown', onKey);
     var t0; cv.addEventListener('touchstart', function (e) { t0 = e.touches[0]; }, { passive: true });
@@ -149,7 +149,7 @@
   function render(view, arg) {
     var g = list.filter(function (x) { return x.id === arg; })[0];
     if (!g) {
-      view.append(el('section', { class: 'panel hero' }, el('div', {}, el('h1', { text: 'Games' }), el('p', { class: 'muted', text: 'Five games that work with a mouse, keyboard or touch. Scores are saved in this browser.' }))));
+      view.append(el('section', { class: 'panel hero' }, el('div', {}, el('h1', { text: 'Games' }), el('p', { class: 'muted', text: 'Games that work with a mouse, keyboard or touch. Scores are saved in this browser.' }))));
       var gr = el('div', { class: 'grid apps', style: 'grid-template-columns:repeat(auto-fill,minmax(210px,1fr))' });
       list.forEach(function (x) { gr.append(el('button', { class: 'panel tile', type: 'button', onclick: function () { T.nav.go('games/' + x.id); } }, el('strong', { text: x.name }), el('small', { text: x.desc }))); });
       view.append(gr); return;

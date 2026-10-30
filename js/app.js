@@ -110,7 +110,7 @@
     if (!g2.children.length) g2.append(el('p', { class: 'panel empty', text: 'All widgets are hidden. Turn them on in Settings.' }));
     view.append(g2);
   }
-  renderDashboard.refresh = function (view) { var s = view.scrollTop; T.nav.render(); window.scrollTo(0, s); };
+  renderDashboard.refresh = function (view) { var s = window.scrollY; T.nav.render(); window.scrollTo(0, s); };
 
   function renderApp(view, id) {
     var a = byId[id];
@@ -136,6 +136,7 @@
     view.append(win);
   }
 
+  T.notify = function (text) { var l = store.get('notifs', []); if (!Array.isArray(l)) l = []; l.unshift({ text: String(text), t: Date.now() }); store.set('notifs', l.slice(0, 50)); if ($('#notifPanel')) renderNotifs(); };
   T.nav.register('dashboard', { title: 'Dashboard', icon: '⌂', nav: 1, mobile: 1, render: renderDashboard });
   T.nav.register('app', { title: 'App', parent: 'dashboard', render: renderApp });
 
@@ -155,15 +156,16 @@
     p.textContent = ''; p.append(el('h2', { text: 'Notifications' }));
     if (!list.length) p.append(el('p', { class: 'empty', text: 'Nothing new.' }));
     list.forEach(function (n) { p.append(el('p', { text: String(n.text || '') })); });
+    if (list.length) p.append(el('button', { class: 'btn small', type: 'button', text: 'Clear all', onclick: function () { store.set('notifs', []); renderNotifs(); } }));
     $('#bellDot').hidden = !list.length;
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.toggle('no-anim', store.get('anim', true) === false);
     $('#globalSearch').addEventListener('click', function () { T.search.open(); });
-    $('#globalSearch').addEventListener('keydown', function (e) { if (e.key === 'Enter' || (e.key.length === 1 && !e.ctrlKey && !e.metaKey)) { e.preventDefault(); T.search.open(); } });
+    $('#globalSearch').addEventListener('keydown', function (e) { if (e.key === 'Enter' || (e.key.length === 1 && !e.ctrlKey && !e.metaKey)) { e.preventDefault(); T.search.open(e.key.length === 1 ? e.key : ''); } });
     document.addEventListener('click', function (e) { var p = $('#notifPanel'); if (!p.hidden && !p.contains(e.target) && !$('#bellBtn').contains(e.target)) { p.hidden = true; $('#bellBtn').setAttribute('aria-expanded', 'false'); } });
-    $('#bellBtn').addEventListener('click', function () { var p = $('#notifPanel'); p.hidden = !p.hidden; $('#bellBtn').setAttribute('aria-expanded', String(!p.hidden)); });
+    $('#bellBtn').addEventListener('click', function () { var p = $('#notifPanel'); renderNotifs(); p.hidden = !p.hidden; $('#bellBtn').setAttribute('aria-expanded', String(!p.hidden)); });
     document.addEventListener('keydown', function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); T.search.open(); }
       if (e.key === 'Escape') { $('#notifPanel').hidden = true; $('#bellBtn').setAttribute('aria-expanded', 'false'); }
