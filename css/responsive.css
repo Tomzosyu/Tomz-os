@@ -9,3 +9,4 @@
   .bottom-nav .nav-item[aria-current=page]{box-shadow:inset 0 3px 0 var(--orange)}
 }
 @media (max-width:420px){.apps{grid-template-columns:repeat(2,1fr)}.welcome-card h1{font-size:1.6rem}}
+@media (max-width:520px){.mobile-brand .brand-text{flex-direction:column;align-items:flex-start;gap:0}.mobile-brand .by{font-size:.5rem}}
