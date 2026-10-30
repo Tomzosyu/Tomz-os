@@ -123,3 +123,5 @@ body.compact .view{gap:14px;padding-top:16px}body.compact .card,body.compact .he
 .holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:340px;margin:0 auto;width:100%}
 .hole{aspect-ratio:1;min-height:80px;border-radius:50%;border:1px solid var(--line);background:#0b0e15;font-size:2.2rem;color:var(--orange);cursor:pointer;transition:transform .1s}
 .hole.up{background:rgba(var(--orange-rgb),.25);border-color:var(--orange);transform:scale(1.06)}
+
+.gsetup{display:grid;gap:8px;width:100%}

@@ -24,7 +24,7 @@
 /* by CodeForge: typed in, metal heats to molten, sparks fly, shine strikes across */
 .by{position:relative;display:inline-flex;font-size:max(.4em,.58rem);font-weight:600;letter-spacing:.16em;color:var(--muted);white-space:nowrap}
 .by-type{position:relative;display:inline-block;overflow:hidden;animation:type 1.3s steps(12) 1.2s backwards}
-.by-type::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);animation:strike 5s ease-in-out 3.5s infinite;pointer-events:none}
+.by-type::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);animation:strike 5s ease-in-out 3.5s infinite;pointer-events:none}
 .forge{color:var(--text);font-weight:700}
 .forge em{font-style:normal;color:var(--orange);animation:heat 2s ease-out 2.5s backwards,ember 2.4s ease-in-out 4.5s infinite}
 .spk{position:absolute;top:0;left:var(--x);width:3px;height:3px;border-radius:50%;background:#ffd27a;box-shadow:0 0 6px var(--orange);opacity:0;animation:spark 1.6s ease-out var(--d) infinite}
