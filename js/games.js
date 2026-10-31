@@ -20,7 +20,7 @@
       return b.every(Boolean) ? { p: 'draw', line: [] } : null;
     }
     function paint() {
-      cells.forEach(function (c, i) { c.textContent = b[i]; c.className = 'cell' + (b[i] === 'O' ? ' o' : '') + (wl.indexOf(i) >= 0 ? ' win' : ''); c.disabled = over || !!b[i]; c.setAttribute('aria-label', 'Row ' + (Math.floor(i / 3) + 1) + ' column ' + (i % 3 + 1) + ': ' + (b[i] || 'empty')); });
+      cells.forEach(function (c, i) { c.textContent = b[i]; c.className = 'cell' + (b[i] === 'O' ? ' o' : '') + (wl.indexOf(i) >= 0 ? ' won' : ''); c.disabled = over || !!b[i]; c.setAttribute('aria-label', 'Row ' + (Math.floor(i / 3) + 1) + ' column ' + (i % 3 + 1) + ': ' + (b[i] || 'empty')); });
       score.textContent = (mode === 'cpu' ? 'You (X) ' : 'X ') + S.x + ' · ' + (mode === 'cpu' ? 'Computer (O) ' : 'O ') + S.o + ' · Draws ' + S.d;
     }
     function say() { status.textContent = mode === 'cpu' ? (turn === 'X' ? 'Your turn' : 'Computer is thinking…') : turn + '’s turn'; }

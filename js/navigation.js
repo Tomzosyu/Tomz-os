@@ -17,13 +17,13 @@
   }
   function current() {
     var h = location.hash.replace(/^#\//, '').split('/');
-    return { id: h[0] || 'dashboard', arg: h[1] || '' };
+    return { id: h[0] || 'dashboard', arg: h[1] || '', arg2: h[2] || '' };
   }
   function render() {
     var c = current(), r = routes[c.id] || routes.dashboard, view = $('#view');
-    if (!routes[c.id]) c = { id: 'dashboard', arg: '' };
+    if (!routes[c.id]) c = { id: 'dashboard', arg: '', arg2: '' };
     view.textContent = '';
-    try { r.render(view, c.arg); } catch (err) { view.textContent = ''; var p = document.createElement('p'); p.className = 'panel empty'; p.textContent = 'Something went wrong loading this page. Try another section.'; view.append(p); if (window.console) console.error(err); }
+    try { r.render(view, c.arg, c.arg2); } catch (err) { view.textContent = ''; var p = document.createElement('p'); p.className = 'panel empty'; p.textContent = 'Something went wrong loading this page. Try another section.'; view.append(p); if (window.console) console.error(err); }
     document.querySelectorAll('.nav-item').forEach(function (a) {
       if (a.dataset.route === (r.parent || c.id)) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });

@@ -12,20 +12,25 @@
   }
   T.el = el;
 
-  // embed: 'try' = may allow framing (cannot be verified from the browser); 'blocked' = known to refuse framing.
+  // url     = official website (opened as the desktop site where the site supports a desktop switch, see "desk")
+  // desk    = optional URL that asks the site for its desktop version
+  // android = Android package name, ios = iOS URL scheme, pc = desktop-app URL scheme (only where one exists)
+  // The app links cannot be tested without the app installed; if one does not open, the website is offered instead.
   var APPS = [
-    { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/', c: '#E62117', l: 'Y', embed: 'blocked' },
-    { id: 'google', name: 'Google Search', url: 'https://www.google.com/', c: '#4285F4', l: 'G', embed: 'blocked' },
-    { id: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/', c: '#10A37F', l: 'C', embed: 'blocked' },
-    { id: 'claude', name: 'Claude', url: 'https://claude.ai/', c: '#C96442', l: 'Cl', embed: 'blocked' },
-    { id: 'gemini', name: 'Google Gemini', url: 'https://gemini.google.com/', c: '#6B5CE7', l: 'Ge', embed: 'blocked' },
-    { id: 'grok', name: 'Grok', url: 'https://grok.com/', c: '#2B2F3A', l: 'Gr', embed: 'blocked' },
-    { id: 'drive', name: 'Google Drive', url: 'https://drive.google.com/', c: '#1FA463', l: 'D', embed: 'blocked' },
-    { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com/', c: '#D93025', l: 'M', embed: 'blocked' },
-    { id: 'github', name: 'GitHub', url: 'https://github.com/', c: '#30363D', l: 'Gh', embed: 'blocked' },
-    { id: 'spotify', name: 'Spotify', url: 'https://open.spotify.com/', c: '#1DB954', l: 'S', embed: 'blocked' },
-    { id: 'wikipedia', name: 'Wikipedia', url: 'https://www.wikipedia.org/', c: '#5B6270', l: 'W', embed: 'try' },
-    { id: 'calendar', name: 'Google Calendar', url: 'https://calendar.google.com/', c: '#168BFF', l: 'Ca', embed: 'blocked' }
+    { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com/', desk: 'https://www.youtube.com/?app=desktop', c: '#E62117', l: 'Y', android: 'com.google.android.youtube', ios: 'youtube://' },
+    { id: 'google', name: 'Google Search', url: 'https://www.google.com/', c: '#4285F4', l: 'G', android: 'com.google.android.googlequicksearchbox', ios: 'googleapp://' },
+    { id: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/', c: '#10A37F', l: 'C', android: 'com.openai.chatgpt', ios: 'chatgpt://' },
+    { id: 'claude', name: 'Claude', url: 'https://claude.ai/', c: '#C96442', l: 'Cl', android: 'com.anthropic.claude' },
+    { id: 'gemini', name: 'Google Gemini', url: 'https://gemini.google.com/', c: '#6B5CE7', l: 'Ge', android: 'com.google.android.apps.bard' },
+    { id: 'grok', name: 'Grok', url: 'https://grok.com/', c: '#2B2F3A', l: 'Gr' },
+    { id: 'drive', name: 'Google Drive', url: 'https://drive.google.com/', c: '#1FA463', l: 'D', android: 'com.google.android.apps.docs', ios: 'googledrive://' },
+    { id: 'gmail', name: 'Gmail', url: 'https://mail.google.com/', c: '#D93025', l: 'M', android: 'com.google.android.gm', ios: 'googlegmail://',
+      variants: { compose: { label: 'Write an email', url: 'https://mail.google.com/mail/?view=cm' } } },
+    { id: 'github', name: 'GitHub', url: 'https://github.com/', c: '#30363D', l: 'Gh', android: 'com.github.android', ios: 'github://' },
+    { id: 'spotify', name: 'Spotify', url: 'https://open.spotify.com/', c: '#1DB954', l: 'S', android: 'com.spotify.music', ios: 'spotify://', pc: 'spotify:' },
+    { id: 'wikipedia', name: 'Wikipedia', url: 'https://www.wikipedia.org/', desk: 'https://www.wikipedia.org/?useformat=desktop', c: '#5B6270', l: 'W', android: 'org.wikipedia', ios: 'wikipedia://' },
+    { id: 'calendar', name: 'Google Calendar', url: 'https://calendar.google.com/', c: '#168BFF', l: 'Ca', android: 'com.google.android.calendar', ios: 'googlecalendar://',
+      variants: { new: { label: 'New calendar event', url: 'https://calendar.google.com/calendar/u/0/r/eventedit' } } }
   ];
   T.apps = APPS;
   var byId = {}; APPS.forEach(function (a) { byId[a.id] = a; });
@@ -35,7 +40,6 @@
   function favs() { return store.get('favs', ['youtube', 'claude', 'github']); }
   function toggleFav(id) { var f = favs(), i = f.indexOf(id); if (i < 0) f.push(id); else f.splice(i, 1); store.set('favs', f); }
   function pushRecent(id) { var r = store.get('recent', []).filter(function (x) { return x !== id; }); r.unshift(id); store.set('recent', r.slice(0, 6)); }
-  function openNew(url) { window.open(url, '_blank', 'noopener,noreferrer'); }
 
   function appCard(a, rerender) {
     var wrap = el('div', { class: 'panel app-card', style: 'padding:0' });
@@ -101,8 +105,8 @@
 
     var sc = el('section', { class: 'panel card' }, el('h2', { text: 'Shortcuts' }),
       el('div', { class: 'chips' },
-        el('button', { class: 'chip', type: 'button', text: 'Write an email', onclick: function () { openNew('https://mail.google.com/mail/?view=cm'); } }),
-        el('button', { class: 'chip', type: 'button', text: 'New calendar event', onclick: function () { openNew('https://calendar.google.com/calendar/u/0/r/eventedit'); } })),
+        el('button', { class: 'chip', type: 'button', text: 'Write an email', onclick: function () { T.nav.go('app/gmail/compose'); } }),
+        el('button', { class: 'chip', type: 'button', text: 'New calendar event', onclick: function () { T.nav.go('app/calendar/new'); } })),
       el('p', { class: 'muted' }, el('kbd', { text: 'Ctrl/Cmd + K' }), document.createTextNode(' search · '), el('kbd', { text: 'Esc' }), document.createTextNode(' close')));
 
     var map = { tasks: taskCard, recent: recent, favorites: fav, shortcuts: sc }, W = T.widgets.get(), g2 = el('div', { class: 'grid cols-2' });
@@ -112,43 +116,87 @@
   }
   renderDashboard.refresh = function (view) { var s = window.scrollY; T.nav.render(); window.scrollTo(0, s); };
 
-  function renderApp(view, id) {
+  function platform() {
+    var ua = navigator.userAgent || '';
+    if (/Android/i.test(ua)) return 'android';
+    if (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+    return 'desktop';
+  }
+  function hostOf(u) { try { return new URL(u).host; } catch (e) { return u; } }
+  function linkOut(url) { // a real <a> click made from a tap is not treated as a blocked pop-up
+    var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function androidIntent(a, url) {
+    var u = new URL(url);
+    return 'intent://' + u.host + u.pathname + u.search + '#Intent;scheme=https;package=' + a.android + ';S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  }
+
+  function renderApp(view, id, variant) {
     var a = byId[id];
     if (!a) { T.nav.go('dashboard'); return; }
-    pushRecent(id);
-    var win = el('section', { class: 'panel win', 'aria-label': a.name + ' window' });
-    var bar = el('div', { class: 'win-bar' }, icon(a), el('span', { class: 'grow', text: a.name }),
-      el('button', { class: 'btn small', type: 'button', text: 'Open in New Tab', onclick: function () { openNew(a.url); } }),
-      el('button', { class: 'btn small accent', type: 'button', text: 'Back to Dashboard', onclick: function () { T.nav.go('dashboard'); } }));
-    win.append(bar);
-    if (a.embed === 'try') {
-      var f = el('iframe', { src: a.url, title: a.name, referrerpolicy: 'no-referrer', sandbox: 'allow-scripts allow-same-origin allow-forms allow-popups', loading: 'lazy' });
-      var wrap = el('div', { style: 'position:relative;min-height:0' }, f,
-        el('p', { class: 'notice', style: 'position:absolute;left:10px;right:10px;bottom:10px;margin:0;background:#10141Df2' }, document.createTextNode('If this stays blank, ' + a.name + ' is refusing to be embedded. Browsers do not tell Tomz OS when that happens, so use Open in New Tab.')));
-      win.append(wrap);
-    } else {
-      win.append(el('div', { class: 'fallback-panel' }, icon(a), el('h2', { text: a.name + ' cannot open inside Tomz OS' }),
-        el('p', { class: 'muted', style: 'max-width:420px;margin:0', text: a.name + ' tells browsers not to show it inside other sites, so it will open in a new tab instead. Tomz OS stays open here.' }),
-        el('div', { class: 'chips', style: 'justify-content:center' },
-          el('button', { class: 'btn primary', type: 'button', text: 'Open in New Tab', onclick: function () { openNew(a.url); } }),
-          el('button', { class: 'btn', type: 'button', text: 'Return to Tomz OS', onclick: function () { T.nav.go('dashboard'); } }))));
+    var v = variant && a.variants && a.variants[variant] ? a.variants[variant] : null;
+    var webUrl = v ? v.url : a.url, deskUrl = v ? v.url : (a.desk || a.url), title = v ? v.label : a.name;
+    var status = el('div', { class: 'open-status', role: 'status', 'aria-live': 'polite' });
+    function say(text, actions) { status.textContent = ''; status.append(el('p', { text: text })); if (actions) status.append(actions); }
+
+    function openBrowser() {
+      pushRecent(id); linkOut(deskUrl);
+      T.log.add('OPEN_BROWSER', a.name + (v ? ' (' + v.label + ')' : '') + ' opened in the browser: ' + deskUrl);
+      say('Opened the official ' + a.name + ' website in a new tab. Saved to the activity log.');
     }
+    function offerWeb(reason) {
+      say(reason, el('div', { class: 'chips' }, el('button', { class: 'btn small primary', type: 'button', text: 'Open in browser instead', onclick: openBrowser })));
+    }
+    function openDevice() {
+      var pf = platform(), scheme = pf === 'ios' ? a.ios : pf === 'desktop' ? a.pc : null;
+      if (pf === 'android' && a.android) {
+        pushRecent(id); T.log.add('OPEN_DEVICE', a.name + ' app requested on Android (falls back to the website if not installed)');
+        say('Opening the ' + a.name + ' app. If it is not installed, your browser opens the website instead.');
+        location.href = androidIntent(a, webUrl); return;
+      }
+      if (!scheme) {
+        T.log.add('OPEN_DEVICE_UNAVAILABLE', a.name + ' has no app link for this device (' + pf + ')');
+        offerWeb(a.name + ' has no app link for this ' + (pf === 'desktop' ? 'computer' : 'device') + '. You can open the official website instead.'); return;
+      }
+      var seen = false;
+      function gone() { seen = true; }
+      function clean() { window.removeEventListener('blur', gone); window.removeEventListener('pagehide', gone); document.removeEventListener('visibilitychange', gone); }
+      window.addEventListener('blur', gone); window.addEventListener('pagehide', gone); document.addEventListener('visibilitychange', gone);
+      pushRecent(id); T.log.add('OPEN_DEVICE', a.name + ' app requested on ' + pf);
+      say('Opening the ' + a.name + ' app…');
+      location.href = scheme;
+      setTimeout(function () {
+        clean(); if (seen || !status.isConnected) return;
+        T.log.add('OPEN_DEVICE_FAILED', a.name + ' app did not open on ' + pf);
+        offerWeb('The ' + a.name + ' app did not open. It may not be installed on this device.');
+      }, 1800);
+    }
+    function choice(icoText, head, sub, fn) {
+      return el('button', { class: 'panel choice', type: 'button', onclick: fn }, el('span', { class: 'choice-ico', 'aria-hidden': 'true', text: icoText }), el('strong', { text: head }), el('small', { text: sub }));
+    }
+    var win = el('section', { class: 'panel open-card', 'aria-label': 'Open ' + title },
+      icon(a), el('h1', { text: 'Open ' + title }), el('p', { class: 'muted', text: 'Choose how you want to open ' + a.name + '.' }),
+      el('div', { class: 'choices' },
+        choice('🌐', 'Open in browser', 'Official ' + hostOf(webUrl) + ' site, desktop version, in a new tab', openBrowser),
+        choice('📱', 'Open in your device', 'Opens the ' + a.name + ' app installed on this device', openDevice)),
+      status,
+      el('p', { class: 'muted small-note', text: 'Opening ' + a.name + ' is saved in the Tomz OS activity log (Settings). If a phone still shows the mobile site, turn on “Desktop site” in your browser menu.' }),
+      el('button', { class: 'btn accent', type: 'button', text: 'Back to Dashboard', onclick: function () { T.nav.go('dashboard'); } }));
     view.append(win);
   }
 
   T.notify = function (text) { var l = store.get('notifs', []); if (!Array.isArray(l)) l = []; l.unshift({ text: String(text), t: Date.now() }); store.set('notifs', l.slice(0, 50)); if ($('#notifPanel')) renderNotifs(); };
   T.nav.register('dashboard', { title: 'Dashboard', icon: '⌂', nav: 1, mobile: 1, render: renderDashboard });
-  T.nav.register('app', { title: 'App', parent: 'dashboard', render: renderApp });
+  T.nav.register('app', { title: 'Open app', parent: 'dashboard', render: renderApp });
 
   function showAuth() {
     var u = T.auth.getUser();
     $('#welcome').hidden = !!u; $('#shell').hidden = !u;
-    if (!u) return;
-    $('#pName').textContent = u.name; $('#pMode').textContent = u.mode === 'google' ? 'Google account' : 'Guest Mode';
-    $('#avatarFallback').textContent = (u.name || '?').charAt(0).toUpperCase();
-    var img = $('#avatar'); img.hidden = !u.picture; $('#avatarFallback').hidden = !!u.picture;
-    if (u.picture) { img.src = u.picture; img.referrerPolicy = 'no-referrer'; }
-    T.nav.build(); T.nav.render();
+    if (!u) { $('#view').textContent = ''; $('#notifPanel').hidden = true; clearInterval(clockTimer); return; }
+    $('#pName').textContent = u.name; $('#pMode').textContent = 'Guest account';
+    $('#avatarFallback').textContent = (u.name || '?').charAt(0).toUpperCase(); $('#avatar').hidden = true; $('#avatarFallback').hidden = false;
+    renderNotifs(); T.nav.build(); T.nav.render();
   }
 
   function renderNotifs() {

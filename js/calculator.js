@@ -6,7 +6,7 @@
     if (!s) throw new Error('Enter a calculation');
     function peek() { return s.charAt(i); }
     function num() {
-      var m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i)); if (!m) throw new Error('Invalid expression');
+      var m = /^(\d+\.?\d*|\.\d+)(e[+-]?\d+)?/i.exec(s.slice(i)); if (!m) throw new Error('Invalid expression');
       i += m[0].length; return parseFloat(m[0]);
     }
     function primary() {

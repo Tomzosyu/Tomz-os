@@ -1,5 +1,5 @@
 (function (T) {
-  var el = T.el, store = T.store, U = T.util, PRE = 'tomz.';
+  var el = T.el, store = T.store, U = T.util, PRE = 'tomz.', KEEP = ['accounts', 'log', 'user']; // never exported or cleared with the data
   var flash = '';
   var ACC = [['Blue', '#168BFF'], ['Orange', '#FF7A18'], ['Green', '#27D17F'], ['Purple', '#9B6BFF']];
 
@@ -26,7 +26,7 @@
     habits: function (v) { return isArr(v) && v.length <= 200 && v.every(function (h) { return obj(h) && typeof h.id === 'string' && typeof h.name === 'string' && obj(h.days); }); },
     calc_hist: strs, favs: strs, recent: strs,
     notifs: function (v) { return isArr(v) && v.length <= 200 && v.every(function (n) { return obj(n) && typeof n.text === 'string'; }); },
-    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_cfg: obj, gclient: function (v) { return typeof v === 'string' && /^[\w.-]+\.apps\.googleusercontent\.com$/.test(v); }, pomo_done: obj,
+    game_scores: obj, widgets: obj, cd_set: obj, cd_state: obj, pomo_state: obj, pomo_cfg: obj, pomo_done: obj,
     pomo_mode: function (v) { return typeof v === 'string' && v.length < 30; },
     accent: function (v) { return typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v); },
     intensity: function (v) { return typeof v === 'number' && v >= 0 && v <= 100; },
@@ -36,7 +36,7 @@
   function exportAll() {
     var data = {};
     for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i); if (k.indexOf(PRE) !== 0 || k === PRE + 'user') continue;
+      var k = localStorage.key(i); if (k.indexOf(PRE) !== 0 || KEEP.indexOf(k.slice(PRE.length)) >= 0) continue;
       try { data[k.slice(PRE.length)] = JSON.parse(localStorage.getItem(k)); } catch (e) {}
     }
     var out = { app: 'tomz-os', version: 1, exportedAt: new Date().toISOString(), data: data };
@@ -49,6 +49,7 @@
     var j; try { j = JSON.parse(text); } catch (e) { throw new Error('That file is not valid JSON.'); }
     if (!obj(j) || j.app !== 'tomz-os' || typeof j.version !== 'number' || !obj(j.data)) throw new Error('This is not a Tomz OS backup file.');
     if (j.version > 1) throw new Error('This backup comes from a newer version of Tomz OS.');
+    delete j.data.gclient; delete j.data.user; // left over from older versions
     var keys = Object.keys(j.data); if (!keys.length) throw new Error('The backup contains no data.');
     keys.forEach(function (k) {
       if (!Object.prototype.hasOwnProperty.call(V, k)) throw new Error('Unknown item "' + k.slice(0, 30) + '" in the backup.');
@@ -57,7 +58,7 @@
     return j.data;
   }
   function clearAll() {
-    var del = []; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf(PRE) === 0 && k !== PRE + 'user') del.push(k); }
+    var del = []; for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k.indexOf(PRE) === 0 && KEEP.indexOf(k.slice(PRE.length)) < 0) del.push(k); }
     del.forEach(function (k) { localStorage.removeItem(k); }); return del.length;
   }
 
@@ -120,13 +121,33 @@
         var n = clearAll(); apply(); flash = 'Cleared ' + n + ' saved item' + (n === 1 ? '' : 's') + '.'; T.nav.render();
       }, 'small'), msg, bad);
     // account
-    var u = T.auth.getUser() || { name: 'Guest', mode: 'guest' };
+    var u = T.auth.getUser() || { name: 'Guest' };
+    var delPw = el('input', { type: 'password', maxlength: '100', autocomplete: 'current-password', placeholder: 'Your password', 'aria-label': 'Password to confirm deleting this account' }), accMsg = el('p', { class: 'err', role: 'alert' });
     var acct = el('section', { class: 'panel card grid' }, el('h2', { text: 'Account' }),
-      el('p', { style: 'margin:0', text: u.name + ' · ' + (u.mode === 'google' ? 'Signed in with Google' : 'Guest Mode') }),
-      el('p', { class: 'muted', style: 'margin:0', text: T.auth.configured ? 'Google sign-in is configured.' : 'Google sign-in is not configured. Add a Client ID in js/auth.js (see docs/SETUP.md).' }),
-      U.btn('Log out', function () { T.auth.logout(); }, 'small'));
+      el('p', { style: 'margin:0', text: u.name + ' · Guest account' + (u.created ? ' · created ' + new Date(u.created).toLocaleDateString() : '') }),
+      el('p', { class: 'muted', style: 'margin:0', text: 'You are asked for your username and password every time you open Tomz OS. Your password is saved only as a salted hash.' }),
+      U.btn('Log out', function () { T.auth.logout(); }, 'small'),
+      el('label', { class: 'field' }, el('span', { text: 'Delete this account (type your password)' }), delPw),
+      U.btn('Delete my account', function () {
+        if (!delPw.value) { accMsg.textContent = 'Type your password to confirm.'; return; }
+        if (!confirm('Delete the guest account "' + u.name + '"? Tasks, notes and settings stay on this device.')) return;
+        T.auth.deleteAccount(delPw.value).catch(function (e) { accMsg.textContent = e.message; });
+      }, 'small'), accMsg);
+    // activity log
+    var logBox = el('div', { class: 'logbox', role: 'log', tabindex: '0', 'aria-label': 'Recent activity' }), logMsg = el('p', { class: 'ok', role: 'status' });
+    function paintLog() {
+      var l = T.log.all(); logBox.textContent = '';
+      if (!l.length) { logBox.append(el('p', { class: 'muted', style: 'margin:0', text: 'No activity yet. Signing in and opening apps will show up here.' })); return; }
+      l.slice(-40).reverse().forEach(function (e) { logBox.append(el('p', { class: 'log-line', text: T.log.line(e) })); });
+    }
+    paintLog();
+    var logCard = el('section', { class: 'panel card grid' }, el('h2', { text: 'Activity log' }),
+      el('p', { class: 'muted', style: 'margin:0', text: 'Sign-ins, account changes and every app you open in the browser or on your device are saved here, in this browser. Passwords are never written to the log.' }),
+      logBox,
+      el('div', { class: 'row' }, U.btn('Download log file', function () { T.log.download(); logMsg.textContent = 'Log file downloaded.'; }, 'primary'),
+        U.btn('Clear log', function () { if (!confirm('Clear the whole activity log? This cannot be undone.')) return; T.log.clear(); T.log.add('LOG_CLEARED', 'activity log cleared'); paintLog(); logMsg.textContent = 'Log cleared.'; }, 'small')), logMsg);
     view.append(el('section', { class: 'panel hero' }, el('div', {}, el('h1', { text: 'Settings' }), el('p', { class: 'muted', text: 'Changes apply immediately and are saved on this device.' }))),
-      el('div', { class: 'grid cols-2' }, appear, snd, wid, acct), data);
+      el('div', { class: 'grid cols-2' }, appear, snd, wid, acct), logCard, data);
   }
   T.nav.register('settings', { title: 'Settings', icon: '⚙', nav: 1, mobile: 1, render: render });
 })(window.Tomz);
