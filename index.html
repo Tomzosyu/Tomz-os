@@ -17,13 +17,20 @@
   <div class="panel welcome-card">
     <div class="brand big" role="img" aria-label="TOMZ OS by CodeForge"><span class="logo-wrap"><i class="ring"></i><img class="logo" src="assets/logo.svg" alt="" width="96" height="96"></span><span class="brand-text"><span class="brand-name" aria-hidden="true"><span class="ch" style="--i:0">T</span><span class="ch" style="--i:1">O</span><span class="ch" style="--i:2">M</span><span class="ch" style="--i:3">Z</span><span class="ch sp"></span><span class="ch" style="--i:5">O</span><span class="ch" style="--i:6">S</span></span><small class="by" aria-hidden="true"><span class="by-type"><span>by</span> <b class="forge">Code<em>Forge</em></b></span><i class="spk" style="--x:62%;--dx:6px;--d:3s"></i><i class="spk" style="--x:76%;--dx:-4px;--d:3.5s"></i><i class="spk" style="--x:88%;--dx:8px;--d:4.1s"></i></small></span></div>
     <h1>Welcome</h1>
-    <p class="muted">Your tasks, tools and apps in one place. Everything you create stays in this browser.</p>
-    <div id="gsiHolder" class="gsi-holder"></div>
-    <button id="googleBtn" class="btn primary" type="button">Continue with Google</button>
-    <button id="guestBtn" class="btn ghost" type="button">Guest Mode</button>
-    <p id="authMsg" class="notice" role="status" hidden></p>
-    <button id="gReset" class="btn small ghost" type="button" hidden>Use a different Client ID</button>
-    <div id="gSetup" class="gsetup" hidden><input id="gClientInput" type="text" placeholder="123456-abc.apps.googleusercontent.com" aria-label="Google Client ID" autocomplete="off" spellcheck="false"><button id="gSave" class="btn primary" type="button">Save Client ID</button></div>
+    <p id="authSub" class="muted"></p>
+    <div class="auth-tabs" role="tablist" aria-label="Sign in or create an account">
+      <button id="tabSignin" class="auth-tab" type="button" role="tab" aria-selected="true">Sign in</button>
+      <button id="tabCreate" class="auth-tab" type="button" role="tab" aria-selected="false">Create guest account</button>
+    </div>
+    <form id="authForm" class="auth-form" novalidate>
+      <label class="field"><span>Username</span><input id="authName" type="text" maxlength="24" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="e.g. tom"></label>
+      <label class="field"><span>Password</span><input id="authPass" type="password" maxlength="100" autocomplete="current-password" placeholder="Your password"></label>
+      <label id="authPass2Wrap" class="field" hidden><span>Confirm password</span><input id="authPass2" type="password" maxlength="100" autocomplete="new-password" placeholder="Type it again"></label>
+      <label class="row show-pw"><input id="authShow" type="checkbox"><span>Show password</span></label>
+      <button id="authSubmit" class="btn primary" type="submit">Sign in</button>
+      <p id="authMsg" class="notice" role="alert" hidden></p>
+      <button id="authReset" class="btn small ghost" type="button" hidden>Forgot password? Remove accounts on this device</button>
+    </form>
   </div>
 </main>
 
@@ -55,6 +62,7 @@
 </div>
 
 <script src="js/storage.js"></script>
+<script src="js/log.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/app.js"></script>
